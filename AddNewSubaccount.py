@@ -102,6 +102,6 @@ def add_new_mailstream(subaccount_name):
                            satellite_subaccount_id)
 
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     subaccount_name = "Webhook From Python"
     add_new_mailstream(subaccount_name)

@@ -5,7 +5,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
 from kivy.uix.textinput import TextInput
-import AddNewSubaccount
+import sparkpostsatellite
+import os
 
 
 class MyGrid(GridLayout):
@@ -33,7 +34,9 @@ class MyGrid(GridLayout):
 
     def add_subaccount(self, instance):
         self.text_label.text = "Created Subaccount:  " + self.textinput.text
-        AddNewSubaccount.add_new_mailstream(self.textinput.text)
+        central_api_key = os.environ.get("CENTRAL_API_KEY")
+        satellite_api_key = os.environ.get("SATELLITE_API_KEY")
+        sparkpostsatellite.add_new_mailstream(self.textinput.text, central_api_key, satellite_api_key)
 
 
 class MyApp(App):
@@ -42,6 +45,5 @@ class MyApp(App):
 
 
 if __name__ == "__main__":
-
     app = MyApp()
     app.run()

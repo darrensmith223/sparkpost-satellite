@@ -1,10 +1,9 @@
 """
-Add new mail stream to central and satellite accounts
+Manage mailstreams between central and satellite accounts.
 """
-import os
-
 import requests
 import json
+import csv
 
 
 def add_subaccount(api_key, subaccount_name):
@@ -84,12 +83,16 @@ def make_api_call(api_type, api_key, api_url, api_data=None, subaccount_id=None)
         return response
 
 
-def add_new_mailstream(subaccount_name):
-    # Initialize
-    central_api_key = os.environ.get("CENTRAL_API_KEY")
-    satellite_api_key = os.environ.get("SATELLITE_API_KEY")
+def add_new_mailstream(subaccount_name, central_api_key, satellite_api_key):
+    """
+    Add a new subaccount to a central account and mirror the subaccount in a satellite account.  Also creates the
+    webhook in the central account to relay events to the satellite account.
 
-
+    :param str subaccount_name:  Name assigned to the new subaccounts
+    :param str central_api_key:  API key used to authenticate the central account
+    :param satellite_api_key:  API key used to authenticate the satellite account
+    :return: None
+    """
     # Add new subaccount to central sending account
     central_subaccount_id = add_subaccount(central_api_key, subaccount_name)
 
@@ -102,6 +105,30 @@ def add_new_mailstream(subaccount_name):
                            satellite_subaccount_id)
 
 
-if __name__ == "__main__":
-    subaccount_name = "Webhook From Python"
-    add_new_mailstream(subaccount_name)
+def map_existing_mailstreams(central_api_key, satellite_api_key, map_file_path):
+    """
+    Map the existing subaccounts from the central account to a new satellite account.  Also creates the
+    webhook in the central account to relay events to the satellite account for each subaccount.
+
+    :param str central_api_key:  API key used to authenticate the central account
+    :param satellite_api_key:  API key used to authenticate the satellite account
+    :param map_file_path:  Full path to the csv file containing the subaccount ID and name of all existing subaccounts
+        that need to be mapped into a satellite account.
+    :return: None
+    """
+    # Read subaccount entries from CSV
+    subaccount_list = []
+    with open(map_file_path) as df:
+        reader = csv.DictReader(df, delimiter=',')
+        for row in reader:
+            subaccount_list.append(row)
+
+    # Create subaccount and webhook mapping for each existing subaccount
+    for subaccount in subaccount_list:
+        central_subaccount_id = subaccount["subaccount_id"]
+        subaccount_name = subaccount["subaccount_name"]
+
+        satellite_subaccount_id = add_subaccount(satellite_api_key, subaccount_name)
+        satellite_customer_id = get_customer_id(satellite_api_key)
+        response = add_webhook(central_api_key, subaccount_name, central_subaccount_id, satellite_customer_id,
+                               satellite_subaccount_id)

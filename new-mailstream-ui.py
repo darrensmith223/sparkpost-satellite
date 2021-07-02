@@ -14,18 +14,20 @@ class MyGrid(GridLayout):
         super(MyGrid, self).__init__(**kwargs)
         self.cols = 1
 
+        self.add_widget(Label(text="", size_hint_y=self.size_hint_y * 0.4))
+
         self.inside_layout = GridLayout()
         self.inside_layout.cols = 2
         self.inside_layout.orientation = "tb-lr"
 
         # Build top interface
-        self.textinput = TextInput(text='Subaccount Name', multiline=False, size_hint_y=self.size_hint_y * 0.1)
+        self.textinput = TextInput(text='Subaccount_Name', multiline=False, size_hint_y=self.size_hint_y * 0.1)
         self.inside_layout.add_widget(Label(text='Subaccount Name: ', size_hint_y=self.size_hint_y * 0.1))
         self.inside_layout.add_widget(self.textinput)
         button = Button(text="Create Subaccount", size_hint_y=self.size_hint_y * 0.2, on_press=self.add_subaccount)
         self.add_widget(self.inside_layout)
         self.add_widget(button)
-        self.text_label = Label(text="Test")
+        self.text_label = Label(text="")
         self.add_widget(self.text_label)
         self.add_widget(Label(text=""))
 

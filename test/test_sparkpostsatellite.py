@@ -10,7 +10,7 @@ def test_get_customer_id():
         api_url,
         status=200,
         content_type='application/json',
-        body='{"results": "yay"}'
+        body='{"results": {"customer_id": 102938}}'
     )
 
     # get customer_id
